@@ -1,0 +1,309 @@
+---
+title: "Dallas Crimes Report 2016"
+output:
+  html_document:
+    df_print: paged
+  pdf_document: default
+
+---
+##### PRID: KALEE26404
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r echo=FALSE, warning=FALSE , message=FALSE}
+library(renv)
+library(ggplot2)
+library(dplyr)
+library(lubridate)
+library(leaflet)
+library(tidyverse)
+library(psych)
+library(readr)
+data<- read.csv("37-00049_UOF-P_2016_prepped.csv", header = TRUE)
+```
+### Summary 
+The full analysis of the provided data has been undertaken and a report has been produced considering all the variants. The conclusion has been drawn at the end of this analysis.
+
+### Table of Contents
+
+#### 1 Introduction
+#### 2 Analysis
+###### 2.1 Descriptive Statistics
+###### 2.2 Summay Statistics 
+###### 2.3 Visulization
+#### 3 Conclusion
+#### 4 Refrences
+#### 5 Appendix
+
+### 1 Introduction:
+
+Dallas city crime data was provided for the year 2016. Reporting the crime without bias and based of correct figures had always been a challenge due to social and political influence. In this report we can look for some key trends of crimes reported in Dallas for the year 2016 and will highlight the hidden trends of police behavior in dealing with suspects by considering their gender and race ref[1]. The full analysis of the data in a graphic format has been provided below.
+
+### 2 Analysis
+
+##### 2.1 Descriptive Statistics:
+
+The statistics covered in below table are for two numerical variables (OFFICER_YEARS_ON_FORCE and BEAT) from the give data set:  
+
+*	mean  
+*	median  
+*	standard deviation (sd)  
+*	minimum (min)  
+*	maximum (max)  
+*	range  
+
+              
+```{r echo=FALSE, warning=FALSE , message=FALSE}
+selected_df = data %>% 
+  select('OFFICER_YEARS_ON_FORCE','BEAT',)
+```
+
+              
+```{r echo=FALSE, warning=FALSE , message=FALSE}
+describe(selected_df) %>% 
+  select(mean,median,sd,min,max,range)
+```
+In the above table we can see that averge no of officer years on force are 8.04 with minimum 0 number of years and maximum years.
+
+##### 2.2 Summary Statistics:
+
+In the below chart we can that crime cases reported in central division was much higher as 23.6% in comparison to north west which was just 8.05% ref[1].  
+#### --------------------------- Division based distribution of Crime Reports ---------------------------  
+
+
+```{r echo=FALSE, warning=FALSE , message=FALSE}
+mydata8 = table(data$DIVISION)
+barplot(mydata8,ylim=c(0,700), las=2 ,space=0.3 , names=c("Central","North Cent","North East","North West", "South Cent","South East", "South West" ),col=c("Light Blue","White"), ) 
+title(main = "Division", ylab= "Frequency")
+```
+```{r echo=FALSE, warning=FALSE , message=FALSE}
+sub_div=table(data$DIVISION) 
+(sub_div/2383)*100
+```
+
+
+In the below chart we can see the distribution of data based on officers gender. It was found that 89.9% of male officer and just 10.07% of female officer had handled the crime in 2016 ref[1].
+
+```{r echo=FALSE, warning=FALSE , message=FALSE}
+mydata8 = table(data$OFFICER_GENDER)
+barplot(mydata8,ylim=c(0,3000), names=c("Female","Male"),col=c("Light Blue","White"), xlab="Gender")
+title(main = "Officer Gender Distribution", ylab= "Frequency")
+```
+
+###### Summary Statistics of **OFFICER_GENDER** variable:        ref[1]
+```{r echo=FALSE, warning=FALSE , message=FALSE}
+sub_div=table(data$OFFICER_GENDER) 
+(sub_div/2383)*100
+```
+
+
+
+It was found that white officers had very ratio of 61.8% to handle crime in Dallas for the year 2016. 
+
+```{r echo=FALSE, warning=FALSE , message=FALSE}
+mydata8 = table(data$OFFICER_RACE)
+barplot(mydata8,ylim=c(0,3000),col=c("Light Blue","White","Light Blue","White","Light Blue","White"), xlab="officer Race")
+title(main = "Officer Race Distribution", ylab= "Frequency")
+```
+
+
+
+###### Summary Statistics of **SUBJECT_RACE** in Percentage.              ref[1]
+```{r echo=FALSE, warning=FALSE , message=FALSE}
+sub_rac=table(data$OFFICER_RACE) 
+(sub_rac/2383)*100
+```
+It was found total 234 number of times officers were injured.
+
+```{r echo=FALSE, warning=FALSE , message=FALSE}
+mydata8 = table(data$OFFICER_INJURY)
+barplot(mydata8,ylim=c(0,3000),col=c("Light Blue","White"), xlab="officer Injury")
+title(main = "Officer Injury Distribution", ylab= "Frequency")
+```
+
+###### Summary Statistics of **OFFICER_INJURY**                 
+```{r echo=FALSE, warning=FALSE , message=FALSE}
+off_inj=table(data$OFFICER_INJURY);off_inj
+```
+In this table it can be seen that out of total 234 injuries, 147 of them were of white officers.
+###### Summary Statistics of **OFFICER_INJURY** & **OFFICER_RACE** variable            ref[1]
+```{r echo=FALSE, warning=FALSE , message=FALSE}
+table(data$OFFICER_INJURY,data$OFFICER_RACE)
+```
+In the below tabel we can see that 1932 subjects gender were male.
+```{r echo=FALSE, warning=FALSE , message=FALSE}
+mydata8 = table(data$SUBJECT_GENDER)
+barplot(mydata8,ylim=c(0,3000), col=c("Light Blue","White"), xlab="Gender")
+title(main = "Subject Gender Distribution", ylab= "Frequency")
+```
+
+###### Summary Statistics of **SUBJECT_GENDER**                  ref[1]
+```{r echo=FALSE, warning=FALSE , message=FALSE}
+sub_gen=table(data$SUBJECT_GENDER)
+sub_gen
+```
+With all the cases reported in year 2016. Proportion of **black** people involved in crime activities was surprisingly as high as 55% ref[1].
+
+```{r echo=FALSE, warning=FALSE , message=FALSE}
+mydata8 = table(data$SUBJECT_RACE)
+barplot(mydata8,ylim=c(0,1600), las=2 ,space=0.3,col=c("Light Blue","White"), ) 
+title(main = "SUBJECT_RACE", ylab= "Frequency")
+```
+```{r echo=FALSE, warning=FALSE , message=FALSE}        
+sub_div=table(data$SUBJECT_RACE) 
+(sub_div/2383)*100
+```
+In the below table we can see that count black male involved in crime cases was 1058.
+###### Summary Statistics of **SUBJECT_GENDER** & **SUBJECT_RACE** variable 
+```{r echo=FALSE, warning=FALSE , message=FALSE}
+table(data$SUBJECT_GENDER,data$SUBJECT_RACE)
+```
+###### Summary Statistics of **SUBJECT_INJURY**                ref[1]
+```{r echo=FALSE, warning=FALSE , message=FALSE}
+sub_inj=table(data$SUBJECT_INJURY)
+(sub_inj)
+```
+ Highest number of injured subjects were 334 which were of black race.
+###### percentage of **OFFICER_INJURY** & **OFFICER_RACE** variable    ref[1]
+```{r echo=FALSE, warning=FALSE , message=FALSE}
+(table(data$SUBJECT_INJURY,data$SUBJECT_RACE))
+```
+In all the crime cases 2048 arrests were made in 2016.
+
+###### Summary Statistics of **SUBJECT_WAS_ARRESTED** variable     ref[1]
+```{r echo=FALSE, warning=FALSE , message=FALSE}
+sub_arst=table(data$SUBJECT_WAS_ARRESTED)
+sub_arst
+```
+Out of 2048 arrests that 1144 were of black people which is 48% of the total arrests done. Second highest 451 were of hispanic people which is 18.92% of the total arrests made.
+###### Summary Statistics of **SUBJECT_INJURY** w.r.t **SUBJECT_RACE** variable  ref[1]
+```{r echo=FALSE, warning=FALSE , message=FALSE}
+table(data$SUBJECT_WAS_ARRESTED,data$SUBJECT_RACE)
+```
+###### Pergentage of **SUBJECT_WAS_ARRESTED** / **SUBJECT_RACE** variable     ref[1]
+```{r echo=FALSE, warning=FALSE , message=FALSE}
+(table(data$SUBJECT_WAS_ARRESTED,data$SUBJECT_RACE)/2383)*100
+```
+
+##### 2.3 Visulizaitons:
+Crime had very close link with time. Below is time distribution of crimes reported between **1/1/2016 12:20:00 AM and 12/31/2016 11:19:00 PM **. There are very clear two spikes of increased crime at two different time stamps **17:00 PM and 20:00 PM**. First Spike at **(17:00 PM)** shows that more crime cases were reported after office hours, when people were heading towards there home and second spike at **(20:00 PM)** in the below graph shows that more crimes cases were reported when people are out for dinner ref[1].
+
+#### ----------------------------- Time Distribution of Crimes Reported-------------------------------
+
+```{r echo=FALSE, warning=FALSE , message=FALSE}
+rm(list = ls())
+crime_data =  read_csv("37-00049_UOF-P_2016_prepped.csv")
+library(lubridate)
+new_df = crime_data %>% 
+  select(INCIDENT_DATE,INCIDENT_TIME) %>% 
+  mutate(Time = substr(x = format(strptime(x = INCIDENT_TIME, "%I:%M:%S %p"), "%H:%M:%S"), 
+                       start = 1, stop = 2),
+         INCIDENT_DATE = as.Date(x = INCIDENT_DATE,'%m/%d/%Y'),
+         Day = weekdays(x = INCIDENT_DATE))
+
+x_values = seq(0,23,1)
+x_labels = ifelse(test = (x_values<10),yes = paste('0',x_values,':','00',sep = ''),
+                  no = paste(x_values,':','00',sep = ''))
+new_df %>% 
+  group_by(Time) %>% 
+  summarise(Frequency = n()) %>% 
+  mutate(Time = as.numeric(Time)) %>% 
+  na.omit() %>% 
+  ggplot(data = .,aes(x = Time,y = Frequency))+
+  geom_point(color = 'blue')+
+  geom_line(color = 'blue')+
+  labs(x = 'Time (24 Hours)')+
+  scale_x_continuous(breaks = seq(0,23,1),labels = x_labels)+
+  scale_y_continuous(breaks = seq(0,200,20),labels = seq(0,200,20))+
+  theme_light()+
+  theme(axis.text.x = element_text(angle = 90),
+        panel.grid.minor.x = element_line(linetype = 'blank'),
+        panel.grid.minor.y = element_line(linetype = 'blank'))
+```
+ref[1] ref[2] ref[8] ref[10] 
+#### ----------------------------- Distribution of Crime on Daily Basis ----------------------------
+It can be seen in the below chart that on average more crime cases were reported on weekend than the normal weekdays ref[1].
+
+```{r echo=FALSE, warning=FALSE , message=FALSE}
+new_df %>% 
+  group_by(Day) %>% 
+  summarise(Frequency = n()) %>% 
+  mutate(Day = factor(x = Day,levels = c('Sunday','Monday','Tuesday','Wednesday','Thursday','Friday',
+                                         'Saturday'))) %>% 
+  na.omit() %>% 
+  ggplot(data = .,aes(x = Day,y = Frequency,fill = Day))+
+  geom_col(show.legend = FALSE)+
+  labs(x = 'Day of the week')+
+  scale_fill_manual(values = rep('Light Blue',7))+
+  geom_text(aes(label = Frequency),vjust = -0.5)+
+  theme_light()+
+  theme(axis.text.x = element_text(angle = 15),
+        panel.grid.minor.x = element_line(linetype = 'blank'),
+        panel.grid.minor.y = element_line(linetype = 'blank'))
+```
+ref[1] ref[2] ref[8] ref[10]   
+#### --------------------------- Hourly Distribution of Crimes on Daily Basis ---------------------------
+
+```{r echo=FALSE, warning=FALSE , message=FALSE}
+
+x_values = seq(0,23,3)
+x_labels = ifelse(test = (x_values<10),yes = paste('0',x_values,':','00',sep = ''),
+                  no = paste(x_values,':','00',sep = ''))
+new_df %>%
+  group_by(Day,Time) %>%
+  summarise(Frequency = n()) %>%
+  mutate(Time = as.numeric(Time),
+         Day = factor(x = Day,levels = c('Sunday','Monday','Tuesday','Wednesday','Thursday','Friday',
+                                         'Saturday'))) %>%
+  na.omit() %>%
+  ggplot(data = .,aes(x = Time,y = Frequency))+
+  geom_point(color = 'blue')+
+  geom_line(color = 'blue')+
+  labs(x = 'Time (24 Hours)')+
+  facet_wrap(~Day,scales = 'free')+
+  scale_x_continuous(breaks = x_values,labels = x_labels)+
+  scale_y_continuous(breaks = seq(0,200,20),labels = seq(0,200,20))+
+  theme_light()+
+  theme(axis.text.x = element_text(angle = 90),
+        panel.grid.minor.x = element_line(linetype = 'blank'),
+        panel.grid.minor.y = element_line(linetype = 'blank'))
+
+``` 
+ref[1] ref[2] ref[8] ref[10]  
+
+#### --------------------------- GEO Location Distribution of Reports ---------------------------
+Location has very close link to the crime. Based on the below geo location distribution of crime, it is very clear that more crime cases were reported in the heart of city ref[1].
+
+```{r echo=FALSE, warning=FALSE , message=FALSE}
+library(leaflet)
+data<- read.csv("37-00049_UOF-P_2016_prepped.csv", header = TRUE)
+LOCATION_LATITUDE<-as.numeric(unlist(data[32]))
+LOCATION_LONGITUDE<-as.numeric(unlist(data[33]))
+```
+
+```{r echo=FALSE, warning=FALSE , message=FALSE}
+m <- leaflet() %>%
+  addTiles() %>%
+  addMarkers(lng=LOCATION_LONGITUDE,lat=LOCATION_LATITUDE, clusterOptions = markerClusterOptions())
+m
+```
+ref[1] ref[4] ref[5] ref[6]  
+
+### Conclusions
+
+In the conclusion it was derived from the very detailed analysis that day, time and location were the key factors in the all crimes that were reported in 2016. Its was also identified that some races were more involved in all the crime that were reported in 2016.
+
+### References:
+1- Course Work 1 code and summay statistics.  
+2- Time Stamp: https://stackoverflow.com/questions/40345291/r-extract-hour-from-variable-format-timestamp?answertab=active#tab-top extract hours  
+3- Calculating Mean, Standard Deviation, Frequencies, Summary Statistics > https://www.youtube.com/watch?v=ACWuV16tdhY  
+4- Geo Location Distribution > https://rstudio.github.io/leaflet/markers.html  
+5- Geo Location Distribution > https://handsondataviz.org/leaflet-maps-with-csv.html  
+6- Geo Location Distribution > https://mapping-in-r.netlify.app/  
+7- https://public.tableau.com/profile/ahmad.dajani#!/vizhome/AnalysisonBostonCrimes/MyStory  
+8- https://www.youtube.com/watch?v=yzfgyV7oIxc  
+9-https://www.youtube.com/watch?v=qI3vbzYrkJs  
+10-https://www.youtube.com/watch?v=nRtp7wSEtJA&list=PLtL57Fdbwb_AWmWWrFV_pLqq2uicpUIO9  
+
+### Appendix
